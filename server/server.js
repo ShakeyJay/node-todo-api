@@ -116,68 +116,20 @@ app.get('/users/me', authenticate, (req,res) => {
   res.send(req.user);
 });
 
+app.post('/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
 });
 
 module.exports = {app};
-
-// var Todo = mongoose.model('Todo', {
-//   text: {
-//     type: String,
-//     required: true,
-//     minlength: 1,
-//     trim: true
-//   },
-//   completed: {
-//     type: Boolean,
-//     default: false
-//   },
-//   completedAt: {
-//     type: Number,
-//     default: null
-//   }
-// });
-//
-// var User = mongoose.model('User', {
-//   email: {
-//     type: String,
-//     required: true,
-//     trim: true,
-//     minlength:1
-//   }
-// });
-
-
-// var user = new User({
-//   email: 'josh@gmail.com    '
-// });
-//
-// user.save().then((doc) => {
-//   console.log('User saved', doc);
-// }, (e) => {
-//   console.log('Error',e);
-// });
-
-
-// newTodo.save().then((doc) => {
-//   console.log('Saved todo', doc);
-// }, (e) => {
-//   console.log('Unable to save Todo');
-// });
-
-// var newTodo = new Todo({
-//   text: 'Cook dinner'
-// });
-//
-// var nextTodo = new Todo({
-//   text: 'Feed to Cat',
-//   completed: true,
-//   completedAt: 123
-// });
-
-// nextTodo.save().then((doc) => {
-//   console.log(JSON.stringify(doc, undefined, 2));
-// }, (e) => {
-//   console.log('Error',e);
-// });
